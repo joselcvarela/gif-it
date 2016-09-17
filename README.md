@@ -17,4 +17,4 @@ Usage:
 - Link of the image is now in your clipboard;
 
 Example:
-![example](https://drops.azureedge.net/drops/files/acc_486047/19g0V)
+![example](https://github.com/joselcvarela/gif-it/blob/master/example.gif)
