@@ -15,3 +15,6 @@ Usage:
 - Press Enter;
 - Click on the image that you want to share;
 - Link of the image is now in your clipboard;
+
+Example:
+http://d.pr/i/19g0V/3brViung
