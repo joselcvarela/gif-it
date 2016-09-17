@@ -17,4 +17,4 @@ Usage:
 - Link of the image is now in your clipboard;
 
 Example:
-http://d.pr/i/19g0V/3brViung
+![example](https://drops.azureedge.net/drops/files/acc_486047/19g0V)
