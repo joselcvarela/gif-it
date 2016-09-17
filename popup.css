@@ -1,0 +1,83 @@
+// Copyright 2016 José Varela
+
+@font-face {
+  font-family: 'Varela Round';
+  src: url(/varela_round.ttf);
+}
+
+body {
+  background: #C8D9E1;
+  font-family: 'Varela Round', sans-serif;
+  min-width: 400px;
+}
+
+#f-search {
+  text-align: center;
+}
+
+@keyframes RainbowEffect {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+#search-term {
+  background: linear-gradient(89deg, #ee4035, #f37736, #fdf498, #7bc043, #0392cf);
+  background-size: 1000% 1000%;
+  animation: RainbowEffect 9s ease infinite;
+
+  border-radius: 7px;
+  border: 1px solid #000;
+  color: #fff;
+  height: 30px;
+  outline: none;
+  padding-left: 20px;
+  text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
+  width: 80%;
+}
+
+.hidden {
+  position: fixed;
+  top: -500px;
+}
+
+.alert-message {
+  align-items: center;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: center;
+  position: fixed;
+  text-align: center;
+  top: 0;
+  width: 100%;
+}
+
+.alert-message h1 {
+  color: rgb(255, 255, 255);
+}
+
+.nodisplay {
+  display: none;
+}
+
+.w400 {
+  width: 400px;
+}
+
+.pt20 {
+  padding-top: 20px;
+}
+
+.gifs-wrapper {
+  text-align: center;
+}
+
+.gifs-wrapper p{
+  color: #fd5559;
+}
+
+#error-message {
+  text-align: center;
+}

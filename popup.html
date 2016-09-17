@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Copyright 2016 José Varela -->
+    <meta name="author" content="José Varela (joselcvarela@gmail.com)">
+    <title>Gif It</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <form id="f-search">
+      <input id="search-term" type="text" name="term" placeholder="Search GIF">
+    </form>
+
+    <h2 id="error-message"></h2>
+
+    <div class="gifs-wrapper">
+      <img src="/sponge_searching.gif" class="w400 pt20" alt="https://az616578.vo.msecnd.net/files/2015/03/11/6356164783584007381741344384_7.gif">
+    </div>
+
+    <a name="#loadMore"></a>
+
+    <textarea id="clipboard" class="hidden"></textarea>
+
+    <div class="alert-message nodisplay">
+      <h1>Copied to clipboard</h1>
+    </div>
+
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
