@@ -17,6 +17,7 @@
   },
   "permissions": [
     "activeTab",
-    "*://*.giphy.com/*"
+    "*://*.giphy.com/*",
+    "*://*.reactiongifs.com/*"
    ]
 }

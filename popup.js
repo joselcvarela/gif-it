@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function searchTerm(offset, event) {
   offset = (offset) ? parseInt(offset) : undefined;
-  var qsOffset = '';
+  var qs = '';
 
   if (event) {
     $errorMessage.html('');
@@ -31,29 +31,52 @@ function searchTerm(offset, event) {
     term = event.currentTarget.term.value;
     term = term.replace(' ', '+');
     pager = 0;
+    //Show only first results
+    $.get('http://www.reactiongifs.com/?s=' + term)
+      .then( function(htmlRsp) {
+        handleReactiongifApi(htmlRsp);
+      })
+      .catch(function () {
+        $errorMessage.html('[Reactiongif] Service Unavailable');
+      });
   } else {
-    qsOffset = '&offset=' + offset;
+    qs = '&offset=' + offset;
   }
 
-  $.get('http://api.giphy.com/v1/gifs/search?q=' + term + qsOffset + '&api_key=dc6zaTOxFJmzC')
-    .then(handleGiffyApi.bind(null, !!offset))
+  $.get('http://api.giphy.com/v1/gifs/search?q=' + term + qs + '&api_key=dc6zaTOxFJmzC')
+    .then(handleGiffyApi)
     .catch(function () {
       pager = -1;
-      $errorMessage.html('Service Unavailable');
+      $errorMessage.html('[Giphy] Service Unavailable');
     });
 
   return false;
 }
 
-function handleGiffyApi(append, jsonRsp) {
+
+function handleReactiongifApi(htmlRsp) {
+  var $imgsReactiongif = $(htmlRsp).find('.entry img');
+  var imgsReactionGif = [];
+  $imgsReactiongif.each(function() {
+    imgsReactionGif.push(this.src);
+  });
+  imgsReactionGif.forEach(function (gifUrl) {
+    var $gifWrapper = $gifWrapperTemplate.clone();
+    var $gif = $gifWrapper.find('.gif');
+    $gif.attr('src', gifUrl);
+
+    $gifWrapper.on('click', handleGifClick);
+
+    $gifsWrapper.append($gifWrapper);
+  });
+}
+
+function handleGiffyApi(jsonRsp) {
   if (jsonRsp.data) {
     if (jsonRsp.data.length == 0) {
       pager = -1;
       $errorMessage.html('Sorry. No results!');
       return false;
-    }
-    if (!append) {
-      $gifsWrapper.html('<p>Click on image to copy the link</p>');
     }
 
     jsonRsp.data.forEach(function (gif) {
