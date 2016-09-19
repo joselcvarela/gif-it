@@ -1,12 +1,22 @@
 // Copyright 2016 José Varela
 
-var $aLoadMore = null;
+var $aLoadMore;
+var $errorMessage;
+var $gifsWrapper;
+var $gifWrapperTemplate;
 var pager = 0;
 var term = '';
 
 document.addEventListener('DOMContentLoaded', function () {
   $('#f-search').on('submit', searchTerm.bind(null, undefined));
+
+  // document.oncontextmenu =
+  // document.body.oncontextmenu = function () { return false; }
+
   $aLoadMore = $('a[name="#loadMore"]');
+  $errorMessage = $('#error-message');
+  $gifsWrapper = $('.gifs-wrapper');
+  $gifWrapperTemplate = $($('#image-template').html());
 
   $(window).on('scroll', debounce(loadMore, 500));
 }, false);
@@ -16,6 +26,8 @@ function searchTerm(offset, event) {
   var qsOffset = '';
 
   if (event) {
+    $errorMessage.html('');
+    $gifsWrapper.html('');
     term = event.currentTarget.term.value;
     term = term.replace(' ', '+');
     pager = 0;
@@ -27,7 +39,7 @@ function searchTerm(offset, event) {
     .then(handleGiffyApi.bind(null, !!offset))
     .catch(function () {
       pager = -1;
-      $('#error-message').html('Service Unavailable');
+      $errorMessage.html('Service Unavailable');
     });
 
   return false;
@@ -37,38 +49,45 @@ function handleGiffyApi(append, jsonRsp) {
   if (jsonRsp.data) {
     if (jsonRsp.data.length == 0) {
       pager = -1;
-      $('#error-message').html('Sorry. No results!');
+      $errorMessage.html('Sorry. No results!');
       return false;
     }
     if (!append) {
-      $('.gifs-wrapper').html('<p>Click on image to copy the link</p>');
+      $gifsWrapper.html('<p>Click on image to copy the link</p>');
     }
 
     jsonRsp.data.forEach(function (gif) {
       var gifUrl = gif.images.downsized_medium.url;
-      var $gif = $('<img src="' + gifUrl + '" class="w400"/> <hr />');
+      var $gifWrapper = $gifWrapperTemplate.clone();
+      var $gif = $gifWrapper.find('.gif');
+      $gif.attr('src', gifUrl);
 
-      $gif.on('click', handleGifClick);
+      $gifWrapper.on('click', handleGifClick);
 
-      $('.gifs-wrapper').append($gif);
+      $gifsWrapper.append($gifWrapper);
     });
 
   } else {
     pager = -1;
-    $('#error-message').html('Can\'t handle the response');
+    $errorMessage.html('Can\'t handle the response');
   }
 };
 
 function handleGifClick(event) {
-  var url = event.currentTarget.src;
+  var $gif = $(event.currentTarget).find('.gif');
+  var $shareIcon = $(event.currentTarget).find('.share .icon');
+  var $shareMessage = $(event.currentTarget).find('.share .message');
+  var url = $gif.attr('src');
   $('#clipboard').val('');
   if (url) {
     $('#clipboard').val(url);
     $('#clipboard').select();
     document.execCommand('copy');
-    $('.alert-message').toggleClass('nodisplay');
+    $shareIcon.hide();
+    $shareMessage.fadeIn();
     setTimeout(function () {
-      $('.alert-message').toggleClass('nodisplay');
+      $shareMessage.hide();
+      $shareIcon.fadeIn();
     }, 2000);
   }
 };

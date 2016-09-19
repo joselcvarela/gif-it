@@ -5,10 +5,20 @@
   src: url(/varela_round.ttf);
 }
 
+@font-face {
+  font-family: 'Icons';
+  src: url(/fontello.ttf);
+}
+
+i {
+  font-family: 'Icons';
+  font-style: normal;
+}
+
 body {
   background: #C8D9E1;
   font-family: 'Varela Round', sans-serif;
-  min-width: 400px;
+  min-width: 450px;
 }
 
 #f-search {
@@ -80,4 +90,42 @@ body {
 
 #error-message {
   text-align: center;
+}
+
+.image-wrapper {
+  position: relative;
+}
+
+.image-wrapper .gif {
+  height: 100%;
+  width: 100%;
+}
+
+.image-wrapper .overlay {
+  background: rgba(0, 0, 0, .5);
+  display: none;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.image-wrapper:hover .overlay {
+  display: block;
+}
+
+.image-wrapper .overlay .share {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image-wrapper .overlay .share .icon {
+  font-size: 56px;
+  color: #66cdaa;
+}
+
+.image-wrapper .overlay .share .message {
+  font-size: 24px;
+  color: #66cdaa;
 }

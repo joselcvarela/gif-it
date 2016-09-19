@@ -14,16 +14,24 @@
     <h2 id="error-message"></h2>
 
     <div class="gifs-wrapper">
-      <img src="/sponge_searching.gif" class="w400 pt20" alt="https://az616578.vo.msecnd.net/files/2015/03/11/6356164783584007381741344384_7.gif">
+      <img src="/images/sponge_searching.gif" class="w400 pt20" alt="https://az616578.vo.msecnd.net/files/2015/03/11/6356164783584007381741344384_7.gif">
     </div>
 
     <a name="#loadMore"></a>
 
     <textarea id="clipboard" class="hidden"></textarea>
 
-    <div class="alert-message nodisplay">
-      <h1>Copied to clipboard</h1>
-    </div>
+    <script id="image-template" type="text/html">
+      <div class="image-wrapper w400">
+        <div class="overlay">
+          <div class="share">
+            <i class="icon">&#xe805;</i>
+            <p class="nodisplay message">Copied to clipboard</p>
+          </div>
+        </div>
+        <img src="" class="gif" alt="">
+      </div>
+    </script>
 
     <script src="jquery-3.1.0.min.js"></script>
     <script src="popup.js"></script>
