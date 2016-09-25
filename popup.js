@@ -6,9 +6,11 @@ var $gifsWrapper;
 var $gifWrapperTemplate;
 var pager = 0;
 var term = '';
+var initTerms = ["cute", "shocked", "suprised", "angry", "hungry", "funny", "hilarious", "omg", "wtf", "nigga", "insult", "offended", "no way", "psycho", "beauty", "love", "peace", "hate", "evil", "metal", "dance", "scream", "hurry"];
 
 document.addEventListener('DOMContentLoaded', function () {
   $('#f-search').on('submit', searchTerm.bind(null, undefined));
+  $(window).on('scroll', debounce(loadMore, 500));
 
   // document.oncontextmenu =
   // document.body.oncontextmenu = function () { return false; }
@@ -18,36 +20,63 @@ document.addEventListener('DOMContentLoaded', function () {
   $gifsWrapper = $('.gifs-wrapper');
   $gifWrapperTemplate = $($('#image-template').html());
 
-  $(window).on('scroll', debounce(loadMore, 500));
+  addExamplesToHome(6);
 }, false);
 
-function searchTerm(offset, event) {
-  offset = (offset) ? parseInt(offset) : undefined;
+function addExamplesToHome(totalExamples) {
+  var randNum = 0;
+  var randNums = [];
+  for(var i = 0; i < totalExamples; i++) {
+    do {
+      randNum = randInt(0, initTerms.length)
+    } while(randNums.indexOf(randNum) > -1);
+
+    randNums[i] = randNum;
+
+    searchTerm({ random: true }, initTerms[randNums[i]]);
+  }
+}
+
+function searchTerm(opts, event) {
   var qs = '';
+  var path = 'search';
+  var paramSearch = 'q';
+
+  for(var param in opts) {
+    if(param == 'random' && opts[param]) {
+      path = 'random';
+      paramSearch = 'tag';
+    } else {
+       qs = '&' + param + '=' + opts[param];
+    }
+  }
 
   if (event) {
     $errorMessage.html('');
     $gifsWrapper.html('');
-    term = event.currentTarget.term.value;
+    term = (typeof(event) == 'string') ? event : event.currentTarget.term.value;
     term = term.replace(' ', '+');
     pager = 0;
     //Show only first results
-    $.get('http://www.reactiongifs.com/?s=' + term)
-      .then( function(htmlRsp) {
-        handleReactiongifApi(htmlRsp);
-      })
-      .catch(function () {
-        $errorMessage.html('[Reactiongif] Service Unavailable');
-      });
-  } else {
-    qs = '&offset=' + offset;
+    // $.get('http://www.reactiongifs.com/?s=' + term)
+    //   .then( function(htmlRsp) {
+    //     handleReactiongifApi(htmlRsp);
+    //   })
+    //   .catch(function () {
+    //     $errorMessage.html('[Reactiongif] Service Unavailable');
+    //   });
   }
 
-  $.get('http://api.giphy.com/v1/gifs/search?q=' + term + qs + '&api_key=dc6zaTOxFJmzC')
+  $('.spinner').show();
+
+  $.get('http://api.giphy.com/v1/gifs/' + path + '?' + paramSearch + '=' + term + qs + '&api_key=dc6zaTOxFJmzC')
     .then(handleGiffyApi)
     .catch(function () {
       pager = -1;
       $errorMessage.html('[Giphy] Service Unavailable');
+    })
+    .always(function () {
+      $('.spinner').hide();
     });
 
   return false;
@@ -77,24 +106,29 @@ function handleGiffyApi(jsonRsp) {
       pager = -1;
       $errorMessage.html('Sorry. No results!');
       return false;
+    } else if (jsonRsp.data.length > 0) {
+      jsonRsp.data.forEach(function (gif) {
+        putGifsOnWrapper(gif.images.downsized_medium.url);
+      });
+    } else if (jsonRsp.data.image_original_url) {
+      putGifsOnWrapper(jsonRsp.data.image_original_url);
     }
-
-    jsonRsp.data.forEach(function (gif) {
-      var gifUrl = gif.images.downsized_medium.url;
-      var $gifWrapper = $gifWrapperTemplate.clone();
-      var $gif = $gifWrapper.find('.gif');
-      $gif.attr('src', gifUrl);
-
-      $gifWrapper.on('click', handleGifClick);
-
-      $gifsWrapper.append($gifWrapper);
-    });
 
   } else {
     pager = -1;
     $errorMessage.html('Can\'t handle the response');
   }
 };
+
+function putGifsOnWrapper(gifUrl) {
+    var $gifWrapper = $gifWrapperTemplate.clone();
+    var $gif = $gifWrapper.find('.gif');
+    $gif.attr('src', gifUrl);
+
+    $gifWrapper.on('click', handleGifClick);
+
+    $gifsWrapper.append($gifWrapper);
+}
 
 function handleGifClick(event) {
   var $gif = $(event.currentTarget).find('.gif');
@@ -119,7 +153,7 @@ function loadMore() {
   if ($(window).scrollTop() > $aLoadMore.offset().top) {
     pager += 25;
     if (pager > 0) {
-      searchTerm(pager, undefined);
+      searchTerm({ offset: pager }, undefined);
     }
   }
 }
@@ -142,3 +176,7 @@ function debounce(func, wait, immediate) {
     if (callNow) func.apply(context, args);
   };
 };
+
+function randInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}

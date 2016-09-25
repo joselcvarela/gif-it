@@ -5,6 +5,7 @@
     <meta name="author" content="José Varela (joselcvarela@gmail.com)">
     <title>Gif It</title>
     <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="/css/loadSpinner.css">
   </head>
   <body>
     <form id="f-search">
@@ -14,7 +15,12 @@
     <h2 id="error-message"></h2>
 
     <div class="gifs-wrapper">
-      <img src="/images/sponge_searching.gif" class="w400 pt20" alt="https://az616578.vo.msecnd.net/files/2015/03/11/6356164783584007381741344384_7.gif">
+    </div>
+
+    <div class="spinner nodisplay">
+      <div class="bounce1"></div>
+      <div class="bounce2"></div>
+      <div class="bounce3"></div>
     </div>
 
     <a name="#loadMore"></a>
@@ -22,14 +28,14 @@
     <textarea id="clipboard" class="hidden"></textarea>
 
     <script id="image-template" type="text/html">
-      <div class="image-wrapper w400">
+      <div class="image-wrapper w200">
         <div class="overlay">
           <div class="share">
             <i class="icon">&#xe805;</i>
             <p class="nodisplay message">Copied to clipboard</p>
           </div>
         </div>
-        <img src="" class="gif" alt="">
+        <img src="" class="gif" alt="" width="200">
       </div>
     </script>
 
