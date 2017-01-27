@@ -2,26 +2,45 @@
 
 var $aLoadMore;
 var $errorMessage;
-var $gifsWrapper;
+var $gifsHomeWrapper;
 var $gifWrapperTemplate;
+var $historyTabTemplate;
+let $historyGifsWrapper;
+var $homeTemplate;
 var pager = 0;
 var term = '';
-var initTerms = ["cute", "shocked", "suprised", "angry", "hungry", "funny", "hilarious", "omg", "wtf", "nigga", "insult", "offended", "no way", "psycho", "beauty", "love", "peace", "hate", "evil", "metal", "dance", "scream", "hurry"];
+const initTerms = [
+  "cute", "shocked", "suprised", "angry", "hungry", "funny", "hilarious", "omg",
+  "wtf", "nigga", "insult", "offended", "no way", "psycho", "beauty", "love",
+  "peace", "hate", "evil", "metal", "dance", "scream", "hurry"
+];
+
 
 document.addEventListener('DOMContentLoaded', function () {
-  $('#f-search').on('submit', searchTerm.bind(null, undefined));
+  $('#f-search').on('submit', searchTerm.bind(null, {}));
   $(window).on('scroll', debounce(loadMore, 500));
+  $('.open-tab').on('click', openTab);
+  $('#clear-history').on('click', clearHistory);
+  if (!window.localStorage.history) window.localStorage.history = '[]';
 
   // document.oncontextmenu =
   // document.body.oncontextmenu = function () { return false; }
 
   $aLoadMore = $('a[name="#loadMore"]');
   $errorMessage = $('#error-message');
-  $gifsWrapper = $('.gifs-wrapper');
+  $gifsHomeWrapper = $('.tab-home').find('.gifs-wrapper');
   $gifWrapperTemplate = $($('#image-template').html());
+  $historyTabTemplate = $('.tab-history');
+  $historyGifsWrapper = $historyTabTemplate.find('.gifs-wrapper');
+  $homeTemplate = $($('.tab-home').html());
 
   addExamplesToHome(6);
 }, false);
+
+function clearHistory(e) {
+  window.localStorage.history = '[]';
+  $historyGifsWrapper.html('');
+}
 
 function addExamplesToHome(totalExamples) {
   var randNum = 0;
@@ -33,7 +52,7 @@ function addExamplesToHome(totalExamples) {
 
     randNums[i] = randNum;
 
-    searchTerm({ random: true }, initTerms[randNums[i]]);
+    searchTerm({ random: initTerms[randNums[i]] });
   }
 }
 
@@ -43,19 +62,21 @@ function searchTerm(opts, event) {
   var paramSearch = 'q';
 
   for(var param in opts) {
-    if(param == 'random' && opts[param]) {
-      path = 'random';
-      paramSearch = 'tag';
-    } else {
-       qs = '&' + param + '=' + opts[param];
+    switch (param) {
+      case 'random':
+        path = 'random';
+        paramSearch = 'tag';
+      break;
+
+      default:
+        qs = '&' + param + '=' + opts[param];
     }
   }
 
   if (event) {
     $errorMessage.html('');
-    $gifsWrapper.html('');
-    term = (typeof(event) == 'string') ? event : event.currentTarget.term.value;
-    term = term.replace(' ', '+');
+    $gifsHomeWrapper.html('');
+    term = (typeof(event) === 'string') ? event : event.currentTarget.term.value;
     pager = 0;
     //Show only first results
     // $.get('http://www.reactiongifs.com/?s=' + term)
@@ -69,7 +90,7 @@ function searchTerm(opts, event) {
 
   $('.spinner').show();
 
-  $.get('http://api.giphy.com/v1/gifs/' + path + '?' + paramSearch + '=' + term + qs + '&api_key=dc6zaTOxFJmzC')
+  $.get(`http://api.giphy.com/v1/gifs/${path}?${paramSearch}=${term}${qs}&api_key=dc6zaTOxFJmzC`)
     .then(handleGiffyApi)
     .catch(function () {
       pager = -1;
@@ -96,7 +117,7 @@ function handleReactiongifApi(htmlRsp) {
 
     $gifWrapper.on('click', handleGifClick);
 
-    $gifsWrapper.append($gifWrapper);
+    $gifsHomeWrapper.append($gifWrapper);
   });
 }
 
@@ -106,13 +127,24 @@ function handleGiffyApi(jsonRsp) {
       pager = -1;
       $errorMessage.html('Sorry. No results!');
       return false;
-    } else if (jsonRsp.data.length > 0) {
-      jsonRsp.data.forEach(function (gif) {
-        putGifsOnWrapper(gif.images.downsized_medium.url);
-      });
-    } else if (jsonRsp.data.image_original_url) {
-      putGifsOnWrapper(jsonRsp.data.image_original_url);
     }
+    const data = (jsonRsp.data instanceof Array) ? jsonRsp.data : [jsonRsp.data];
+    data.forEach((gif, index) => {
+      var gifUrl;
+      try {
+        gifUrl = gif.images.downsized_medium.url;
+      } catch (e) {
+        gifUrl = gif.fixed_width_downsampled_url;
+      }
+      var $gifWrapper = $gifWrapperTemplate.clone();
+      $gifWrapper.attr('data-key', pager++);
+      var $gif = $gifWrapper.find('.gif');
+      $gif.attr('src', gifUrl);
+
+      $gifWrapper.on('click', handleGifClick);
+
+      $gifsHomeWrapper.append($gifWrapper);
+    });
 
   } else {
     pager = -1;
@@ -127,7 +159,7 @@ function putGifsOnWrapper(gifUrl) {
 
     $gifWrapper.on('click', handleGifClick);
 
-    $gifsWrapper.append($gifWrapper);
+    $gifsHomeWrapper.append($gifWrapper);
 }
 
 function handleGifClick(event) {
@@ -142,6 +174,11 @@ function handleGifClick(event) {
     document.execCommand('copy');
     $shareIcon.hide();
     $shareMessage.fadeIn();
+
+    const history = JSON.parse(window.localStorage.history);
+    if (history.indexOf(url) === -1) history.push(url);
+    window.localStorage.history = JSON.stringify(history);
+
     setTimeout(function () {
       $shareMessage.hide();
       $shareIcon.fadeIn();
@@ -179,4 +216,32 @@ function debounce(func, wait, immediate) {
 
 function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function openTab(e) {
+  tabName = $(e.currentTarget).data('tab');
+  if (tabName === 'history') buildHistoryTab();
+
+  $('.active-tab').hide();
+  $(`.tab-${tabName}`).addClass('active-tab').show();
+}
+
+function buildHistoryTab() {
+  const history = JSON.parse(window.localStorage.history);
+
+  if ($historyGifsWrapper.children().length === history.length)
+    return;
+
+  $historyGifsWrapper.html('');
+  history.reverse().forEach(function (gifUrl) {
+    const $gifWrapper = $gifWrapperTemplate.clone();
+    const $gif = $gifWrapper.find('.gif');
+    $gif.attr('src', gifUrl);
+
+    $gifWrapper.on('click', handleGifClick);
+
+    $historyGifsWrapper.append($gifWrapper);
+  });
+
+  return $historyTabTemplate;
 }

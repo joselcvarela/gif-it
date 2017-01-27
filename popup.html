@@ -8,22 +8,42 @@
     <link rel="stylesheet" href="/css/loadSpinner.css">
   </head>
   <body>
-    <form id="f-search">
-      <input id="search-term" type="text" name="term" placeholder="Search GIF">
-    </form>
+    <div class="tab">
+      <div class="fullwindow tab-home active-tab">
+        <header>
+          <button class="open-tab" data-tab="history">History</button>
+          <button>ToDo</button>
+          <button>ToDo</button>
+        </header>
+        <form id="f-search">
+          <input id="search-term" type="text" name="term" placeholder="Search GIF" autocomplete="off">
+        </form>
 
-    <h2 id="error-message"></h2>
+        <h2 id="error-message"></h2>
 
-    <div class="gifs-wrapper">
+        <div class="gifs-wrapper">
+        </div>
+
+        <div class="spinner nodisplay">
+          <div class="bounce1"></div>
+          <div class="bounce2"></div>
+          <div class="bounce3"></div>
+        </div>
+
+        <a name="#loadMore"></a>
+      </div>
+
+      <div class="tab-history hide">
+        <header>
+          <button class="open-tab" data-tab="home">Back</button>
+          <button>ToDo</button>
+          <button>ToDo</button>
+        </header>
+        <button id="clear-history">Clear</button>
+        <div class="gifs-wrapper">
+        </div>
+      </div>
     </div>
-
-    <div class="spinner nodisplay">
-      <div class="bounce1"></div>
-      <div class="bounce2"></div>
-      <div class="bounce3"></div>
-    </div>
-
-    <a name="#loadMore"></a>
 
     <textarea id="clipboard" class="hidden"></textarea>
 
@@ -39,7 +59,7 @@
       </div>
     </script>
 
-    <script src="jquery-3.1.0.min.js"></script>
+    <script src="vendor/jquery-3.1.0.min.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>
