@@ -4,11 +4,16 @@ var $aLoadMore;
 var $errorMessage;
 var $gifsWrapper;
 var $gifWrapperTemplate;
+var $historyTabTemplate;
+var $homeTemplate;
 var pager = 0;
 var term = '';
+var tab = { history: false };
 
 document.addEventListener('DOMContentLoaded', function () {
   $('#f-search').on('submit', searchTerm.bind(null, undefined));
+  $('#open-tab-history').on('click', openTab.bind(null, 'history'));
+  if (!window.localStorage.history) window.localStorage.history = '[]';
 
   // document.oncontextmenu =
   // document.body.oncontextmenu = function () { return false; }
@@ -17,6 +22,8 @@ document.addEventListener('DOMContentLoaded', function () {
   $errorMessage = $('#error-message');
   $gifsWrapper = $('.gifs-wrapper');
   $gifWrapperTemplate = $($('#image-template').html());
+  $historyTabTemplate = $($('#history-tab-template').html());
+  $homeTemplate = $($('.fullwindow').html());
 
   $(window).on('scroll', debounce(loadMore, 500));
 }, false);
@@ -29,13 +36,13 @@ function searchTerm(offset, event) {
     $errorMessage.html('');
     $gifsWrapper.html('');
     term = event.currentTarget.term.value;
-    term = term.replace(' ', '+');
+    term = encodeURI(term);
     pager = 0;
   } else {
     qsOffset = '&offset=' + offset;
   }
 
-  $.get('http://api.giphy.com/v1/gifs/search?q=' + term + qsOffset + '&api_key=dc6zaTOxFJmzC')
+  $.get(`http://api.giphy.com/v1/gifs/search?q=${term}${qsOffset}&api_key=dc6zaTOxFJmzC`)
     .then(handleGiffyApi.bind(null, !!offset))
     .catch(function () {
       pager = -1;
@@ -85,6 +92,11 @@ function handleGifClick(event) {
     document.execCommand('copy');
     $shareIcon.hide();
     $shareMessage.fadeIn();
+
+    const history = JSON.parse(window.localStorage.history);
+    if (history.indexOf(url) === -1) history.push(url);
+    window.localStorage.history = JSON.stringify(history);
+
     setTimeout(function () {
       $shareMessage.hide();
       $shareIcon.fadeIn();
@@ -119,3 +131,34 @@ function debounce(func, wait, immediate) {
     if (callNow) func.apply(context, args);
   };
 };
+
+function openTab(tabName, e) {
+  tab[tabName] = !tab[tabName];
+  let template = $homeTemplate;
+  if (tab[tabName]) {
+    if (tabName === 'history') template = buildHistoryTab();
+  }
+  $('.fullwindow').html(template);
+}
+
+function buildHistoryTab() {
+  const history = JSON.parse(window.localStorage.history);
+  const $historyGifsWrapper = $historyTabTemplate.find('.gifs-wrapper');
+
+  history.reverse().forEach(function (gifUrl) {
+    const $gifWrapper = $gifWrapperTemplate.clone();
+    const $gif = $gifWrapper.find('.gif');
+    $gif.attr('src', gifUrl);
+
+    $gifWrapper.on('click', handleGifClick);
+
+    $historyGifsWrapper.append($gifWrapper);
+  });
+
+  $historyTabTemplate.find('#clear-history').on('click', () => {
+    window.localStorage.history = '[]';
+    $historyGifsWrapper.html('');
+  });
+
+  return $historyTabTemplate;
+}

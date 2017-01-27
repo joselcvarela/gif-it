@@ -16,34 +16,23 @@ i {
 }
 
 body {
-  background: #C8D9E1;
+  background: #1A373E;
   font-family: 'Varela Round', sans-serif;
   min-width: 450px;
+  margin: 0;
+  padding: 0;
 }
 
 #f-search {
   text-align: center;
 }
 
-@keyframes RainbowEffect {
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
-}
-
 #search-term {
-  background: linear-gradient(89deg, #ee4035, #f37736, #fdf498, #7bc043, #0392cf);
-  background-size: 1000% 1000%;
-  animation: RainbowEffect 9s ease infinite;
-
-  border-radius: 7px;
-  border: 1px solid #000;
-  color: #fff;
-  height: 30px;
-  outline: none;
-  padding-left: 20px;
-  text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
-  width: 80%;
+    margin-top: 10px;
+    border: 1px solid #000;
+    height: 30px;
+    padding-left: 20px;
+    width: 80%;
 }
 
 .hidden {
@@ -78,6 +67,10 @@ body {
 
 .pt20 {
   padding-top: 20px;
+}
+
+.ptb20 {
+  padding: 20px 0;
 }
 
 .gifs-wrapper {
@@ -128,4 +121,26 @@ body {
 .image-wrapper .overlay .share .message {
   font-size: 24px;
   color: #66cdaa;
+}
+
+header {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  padding: 0;
+  background: rgba(0,0,0, .5);
+}
+
+header button {
+  background: #2C95AE;
+  border: 1px solid;
+  border-color: transparent black transparent transparent;
+  padding: 10px 0;
+  width: 100%;
+  cursor: pointer;
+}
+
+header button:hover {
+  opacity: .6;
+  outline: 0;
 }
