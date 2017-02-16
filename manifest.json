@@ -4,7 +4,7 @@
   "name": "Gif It",
   "description": "Simple search for GIFs",
   "author": "José Varela (joselcvarela@gmail.com)",
-  "version": "1.1",
+  "version": "1.2",
 
   "browser_action": {
    "default_icon": "icon32.png",
