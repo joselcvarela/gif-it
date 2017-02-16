@@ -6,17 +6,19 @@
     <title>Gif It</title>
     <link rel="stylesheet" href="popup.css">
     <link rel="stylesheet" href="/css/loadSpinner.css">
+    <link rel="stylesheet" href="/css/icons.css">
   </head>
   <body>
     <div class="tab">
       <div class="fullwindow tab-home active-tab">
         <header>
-          <button class="open-tab" data-tab="history">History</button>
-          <button>ToDo</button>
-          <button>ToDo</button>
+          <div class="header">
+            <button class="open-tab" data-tab="history">History</button>
+          </div>
         </header>
         <form id="f-search">
-          <input id="search-term" type="text" name="term" placeholder="Search GIF" autocomplete="off">
+          <input id="search-term" type="text" name="term" placeholder="Search GIF" autocomplete="off" autofocus>
+          <button type="submit"><i class="icon-search"></i></button>
         </form>
 
         <h2 id="error-message"></h2>
@@ -35,11 +37,14 @@
 
       <div class="tab-history hide">
         <header>
-          <button class="open-tab" data-tab="home">Back</button>
-          <button>ToDo</button>
-          <button>ToDo</button>
+          <div class="header">
+            <button class="open-tab" data-tab="home">Back</button>
+          </div>
+
+          <div class="subheader">
+            <button id="clear-history">Remove All</button>
+          </div>
         </header>
-        <button id="clear-history">Clear</button>
         <div class="gifs-wrapper">
         </div>
       </div>
@@ -48,14 +53,19 @@
     <textarea id="clipboard" class="hidden"></textarea>
 
     <script id="image-template" type="text/html">
-      <div class="image-wrapper w200">
-        <div class="overlay">
-          <div class="share">
-            <i class="icon">&#xe805;</i>
-            <p class="nodisplay message">Copied to clipboard</p>
-          </div>
+      <div class="wrap">
+        <div class="remove hide">
+          <button class="btn-remove"><i class="icon-trash"></i></button>
         </div>
-        <img src="" class="gif" alt="" width="200">
+        <div class="image-wrapper w200">
+          <div class="overlay">
+            <div class="share">
+              <i class="icon icon-copy"></i>
+              <p class="nodisplay message">Copied to clipboard</p>
+            </div>
+          </div>
+          <img src="" class="gif" alt="" width="200">
+        </div>
       </div>
     </script>
 

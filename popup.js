@@ -15,7 +15,6 @@ const initTerms = [
   "peace", "hate", "evil", "metal", "dance", "scream", "hurry"
 ];
 
-
 document.addEventListener('DOMContentLoaded', function () {
   $('#f-search').on('submit', searchTerm.bind(null, {}));
   $(window).on('scroll', debounce(loadMore, 500));
@@ -220,28 +219,38 @@ function randInt(min, max) {
 
 function openTab(e) {
   tabName = $(e.currentTarget).data('tab');
-  if (tabName === 'history') buildHistoryTab();
+  if (tabName === 'history') buildHistoryTab(tabName);
 
   $('.active-tab').hide();
   $(`.tab-${tabName}`).addClass('active-tab').show();
 }
 
-function buildHistoryTab() {
+function buildHistoryTab(tabName) {
   const history = JSON.parse(window.localStorage.history);
 
   if ($historyGifsWrapper.children().length === history.length)
     return;
 
   $historyGifsWrapper.html('');
-  history.reverse().forEach(function (gifUrl) {
+  history.reverse().forEach((gifUrl, idx) => {
     const $gifWrapper = $gifWrapperTemplate.clone();
+    const $check = $gifWrapper.find('.remove');
+    $check.removeClass('hide');
     const $gif = $gifWrapper.find('.gif');
     $gif.attr('src', gifUrl);
 
-    $gifWrapper.on('click', handleGifClick);
+    $gifWrapper.find('.btn-remove').on('click', removeFromHistory.bind(this, gifUrl, $gifWrapper));
+    $gifWrapper.find('.image-wrapper').on('click', handleGifClick);
 
     $historyGifsWrapper.append($gifWrapper);
   });
 
   return $historyTabTemplate;
+}
+
+function removeFromHistory(url, $toRemove, ev){
+  const history = JSON.parse(window.localStorage.history);
+  const indexToRemove = history.indexOf(url)
+  history.splice(url, 1);
+  $toRemove.remove();
 }
